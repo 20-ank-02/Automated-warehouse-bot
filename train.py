@@ -1,13 +1,13 @@
 from ultralytics import YOLO
 
 # Create a new YOLO model from scratch
-model = YOLO('yolov8n.yaml')
+model = YOLO('yolov8m.yaml')
 
 # Load a pretrained YOLO model (recommended for training)
 # model = YOLO('./runs/detect/train10/weights/best.pt')
 
 # Train the model using the 'coco128.yaml' dataset for 3 epochs
-results = model.train(data='data.yaml', epochs=90)
+results = model.train(data='data.yaml', epochs=300, batch=4)
 
 # Evaluate the model's performance on the validation set
 results = model.val()

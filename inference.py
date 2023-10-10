@@ -19,5 +19,3 @@ for r in results:
 cv.imshow('result',img)
 cv.waitKey(0)
 cv.destroyAllWindows()
-cv.waitKey(0)
-cv.destroyAllWindows()

@@ -6,8 +6,8 @@ port = 1  # Make sure it matches the server's port
 client_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 client_sock.connect((server_mac_address, port))
 
-while True:
-    message = input("Message=")
+def send(message):
+    # message = input("Message=")
     client_sock.send(message)
     if message.split(sep='.')[0] == "exit":
         client_sock.close()

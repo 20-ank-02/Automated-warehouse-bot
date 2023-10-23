@@ -1,5 +1,7 @@
 import bluetooth
-# import nema
+from connections import Connection
+
+obj=Connection()
 server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 
 port = 1  # You can choose any available port
@@ -18,22 +20,48 @@ try:
         if not data:
             break
         
-        if data.decode('utf-8').split(sep='.')[0] == 'x':
-            print("moving x")
-        
-        if data.decode('utf-8').split(sep='.')[0] == 'y':
-            print("moving y")
-            
-        if data.decode('utf-8').split(sep='.')[0] == 'z':
-            print("moving z")
-        # print(f"Received: {data.decode('utf-8')}")
-        
         if data.decode('utf-8').split(sep='.')[0] == "exit":
             print("exiting")
+            
+        x , y = data.decode('utf-8').split(sep='.')[0] , data.decode('utf-8').split(sep='.')[1]
+        
+        print("moving x",data.decode('utf-8').split(sep='.')[0])
+        # obj.moveX(1,x)
 
-
+        print("moving y",data.decode('utf-8').split(sep='.')[1])
+        # obj.moveY(1,y)
+        
+        # fetch z-axis 
+        z=obj.distance()
+        # open valve
+        obj.valve(1)
+        # obj.moveZ(1,z)
+        
+        tempZ=z
+        while tempZ >= 4 :
+            tempZ=obj.distance()
+        
+        #go back to initial height (top height)
+        # obj.moveZ(0,z)
+        
+        #suppose table center = 255,255
+        #reach table center
+        # obj.moveX(1,255-x)
+        # obj.moveY(1,255-y)
+        
+        # check qr
+        # close valve
+        obj.valve(0)
+        
+        # reach 0,0
+        # obj.moveX(0,255)
+        # obj.moveY(0,255)
+        
+        client_sock.send('detect')
+        
+        
 except KeyboardInterrupt:
-    pass
+    obj.exitGPIO()
 
 print("Closing connection...")
 client_sock.close()

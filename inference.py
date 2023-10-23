@@ -2,20 +2,39 @@ from ultralytics import YOLO
 # from ultralytics.utils.plotting import Annotator
 import cv2 as cv 
 
-model = YOLO('./runs/detect/train10/weights/best.pt')
+model = YOLO('./runs/detect/train/weights/best.pt')
 
-img = cv.imread('./cardboard.jpg')
+# print('this is also getting called')   
 
-results=model(img)
+def detect():
+    vidObj = cv.VideoCapture(0)
 
-for r in results:
-    for box in r.boxes:
-        # print(int(box.xyxy[0][0].item()))
-        xy1=(int(box.xyxy[0][0].item()),int(box.xyxy[0][1].item()))
-        xy2=(int(box.xyxy[0][2].item()),int(box.xyxy[0][3].item())) 
-        
-        cv.rectangle( img, xy1 , xy2 , (255,0,0), 2)
-        
-cv.imshow('result',img)
-cv.waitKey(0)
-cv.destroyAllWindows()
+    # vidObj = cv.VideoCapture() 
+    # img = cv.imread('./test.jpg')
+    c,img=vidObj.read()
+    # print(type(img))
+    # cv.imwrite('frame.jpg',img)
+    results=model(img)
+
+    center=tuple()
+    # print(results[0].boxes[0].conf)
+
+    for r in results:
+        for box in r.boxes:
+            print(box.conf.item())
+            
+            xy1=(int(box.xyxy[0][0].item()),int(box.xyxy[0][1].item()))  #top left
+            xy2=(int(box.xyxy[0][2].item()),int(box.xyxy[0][3].item()))  #bottom right
+            
+            # cv.rectangle( img, xy1 , xy2 , (255,0,0), 2)
+            
+            center=( ( xy1[0]+xy2[0])//2 , (xy1[1]+xy2[1])//2 )
+            # cv.circle( img , center, 1 , (0,0,255*(box.conf.item()*100)), 2)
+            # cv.imwrite('d.jpg',img)         
+            break
+    return center
+    
+# detect()  
+# cv.imshow('result',img)
+# cv.waitKey(0)
+# cv.destroyAllWindows()

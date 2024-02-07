@@ -1,25 +1,30 @@
 import cv2
 from pyzbar.pyzbar import decode
 
-# Capture video from the webcam
-cap = cv2.VideoCapture(0)  # 0 for default camera
+
+def detectQR():
+    # Capture video from the webcam
+    cam = cv2.VideoCapture(0)  # 0 for default camera
+
+# Read input from the camera
+    result, image = cam.read()
 
 # Create a variable to store the QR code coordinates
-qr_code_coordinates = None
+    qr_code_coordinates = None
+    qr_code_detected = False
 
-while True:
-    ret, frame = cap.read()
 
-    if not ret:
-        break
+# Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Convert the frame to grayscale
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Detect QR codes in the frame
+# Detect QR codes
     decoded_objects = decode(gray)
 
+# Initialize a flag to check if a QR code is detected
+    qr_code_detected = False
+
     for obj in decoded_objects:
+
         # Extract the coordinates of the QR code bounding box
         points = obj.polygon
         if len(points) == 4:
@@ -28,30 +33,21 @@ while True:
 
         # Draw the bounding box around the QR code
         for j in range(4):
-            cv2.line(frame, qr_code_coordinates[j], qr_code_coordinates[(
+            cv2.line(image, qr_code_coordinates[j], qr_code_coordinates[(
                 j+1) % 4], (0, 255, 0), 3)
+        # Set the flag to True as a QR code is detected
+        qr_code_detected = True
 
-    # Display the frame with the detected QR code bounding box
-    cv2.imshow('QR Code Detection', frame)
+    # Display the image with bounding boxes (optional)
+    cv2.imshow('QR Code Detection', image)
+    cv2.waitKey(0)
+    # Release the webcam
+    cam.release()
+    cv2.destroyAllWindows()
 
-    # Break the loop if a QR code is detected
-    if qr_code_coordinates:
-        cv2.putText(frame, "QR Code Detected", (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.imshow('QR Code Detection', frame)
-# Print the coordinates of the QR code bounding box
-        print(f"QR Code Coordinates: {qr_code_coordinates}")
+    # Check if a QR code is detected and return True or False
+    return qr_code_detected
 
-    # Exit the loop when 'q' key is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
 
-# Release the webcam (optional)
-cap.release()
-
-# Keep the window open until a key is pressed
-cv2.waitKey(0)
-
-# Close all OpenCV windows
-cv2.destroyAllWindows()
-
+res = detectQR()
+print(res)

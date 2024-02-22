@@ -1,5 +1,5 @@
 *.zip
 pybluez/
 Submission/Final-Team.xlsx
-*Docs
-*dump
+/Docs
+/dump
